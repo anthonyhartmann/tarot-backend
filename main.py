@@ -8,7 +8,7 @@ from flask import Flask
 from google.cloud.sql.connector import Connector
 from dotenv import dotenv_values
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="build", static_url_path="/")
 
 tarot = list(range(78))
 
@@ -44,6 +44,7 @@ def rows_to_dict(rows, headers):
     return [{headers[i] : row[i] for i in range(len(headers))} for row in rows]
 
 
+
 @app.route('/data')
 def choose_tarot():
     conn = get_db_connection()
@@ -61,6 +62,10 @@ def choose_tarot():
     cur.close()
     conn.close()
     return cards
+
+@app.route("/")
+def index():
+    return app.send_static_file("index.html")
 
 
 if __name__ == '__main__':
